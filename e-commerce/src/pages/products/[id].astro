@@ -1,9 +1,20 @@
 ---
 import "../../styles/global.css";
+import { getCollection } from "astro:content";
 
 export async function getStaticPaths() {
-    const products: Product[] = await fetch('https://fakestoreapi.com/products')
-        .then(response => response.json());
+
+  const productsCollection = await getCollection('products');
+
+    const products = productsCollection.map(item => ({
+      id: item.data.id,
+      title: item.data.title,
+      price: item.data.price,
+      image: item.data.image || '',
+      description: item.data.description,
+      category: item.data.category,
+      rating: item.data.rating || { rate: 0, count: 0 }
+    }));
     
     return products.map((product: Product) => ({
         params: { id: product.id.toString() },

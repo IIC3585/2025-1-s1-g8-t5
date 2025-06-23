@@ -4,16 +4,24 @@ import ProductList from "../components/ProductList";
 import PriceFilter from "../components/PriceFilter";
 import NameSearchFilter from "../components/NameSearchFilter.vue";
 import CategoryFilter from "../components/CategoryFilter.svelte";
-import productos from '../content/productos.json'; 
-// import api from '../services/api'
+import { getCollection } from 'astro:content';
 
-// const res = await api.get('url...');
-// const productos = res.data.data
+const productsCollection = await getCollection('products');
 
-const products = productos;
+// Transform collection data to match Product interface
+const products = productsCollection.map(item => ({
+  id: item.data.id,
+  title: item.data.title,
+  price: item.data.price,
+  image: item.data.image || '',
+  description: item.data.description,
+  category: item.data.category,
+  rating: item.data.rating || { rate: 0, count: 0 }
+}));
 
-const minPrice = Math.floor(Math.min(...products.map((p: any) => p.price)));
-const maxPrice = Math.ceil(Math.max(...products.map((p: any) => p.price)));
+const prices = products.map(p => p.price);
+const minPrice = prices.length > 0 ? Math.floor(Math.min(...prices)) : 0;
+const maxPrice = prices.length > 0 ? Math.ceil(Math.max(...prices)) : 1000; // Default max price
 
 const categories = [...new Set(products.map((p: any) => p.category))];
 
@@ -24,6 +32,10 @@ interface Product {
   image: string;
   description: string;
   category: string;
+  rating: {
+    rate: number;
+    count: number;
+  };
 }
 ---
 
