@@ -1,42 +1,46 @@
 ---
 import "../styles/global.css";
+import ProductList from "../components/ProductList";
+import PriceFilter from "../components/PriceFilter";
+import NameSearchFilter from "../components/NameSearchFilter.vue";
+import CategoryFilter from "../components/CategoryFilter.svelte";
+
 const res = await fetch('https://fakestoreapi.com/products');
 const products = await res.json();
+
+const minPrice = Math.floor(Math.min(...products.map((p: any) => p.price)));
+const maxPrice = Math.ceil(Math.max(...products.map((p: any) => p.price)));
+
+const categories = [...new Set(products.map((p: any) => p.category))];
+
+interface Product {
+  id: number;
+  title: string;
+  price: number;
+  image: string;
+  description: string;
+  category: string;
+}
 ---
 
 <html lang="es">
   <head>
     <title>Mi E-commerce</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" charset="UTF-8">
   </head>
   <body class="p-8 bg-gray-100 min-h-screen">
-    <h1 class="text-4xl font-bold mb-6">Catálogo de Productos</h1>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-      {products.map((product: Product) => (
-        <div class="bg-white border rounded-xl shadow hover:shadow-lg transition p-4 flex flex-col items-center">
-          
-          <!-- Imagen controlada -->
-          <div class="w-full h-40 flex items-center justify-center overflow-hidden mb-4">
-            <img 
-              src={product.image}
-              alt={product.title}
-              class="max-h-full max-w-full object-contain"
-            />
-          </div>
-
-          <!-- Título y precio -->
-          <h2 class="text-md font-semibold mb-1 text-center line-clamp-2">{product.title}</h2>
-          <p class="text-lg font-bold text-green-600 mb-4">${product.price}</p>
-
-          <!-- Botón -->
-          <a 
-            href={`/products/${product.id}`} 
-            class="mt-auto bg-blue-600 text-white text-center py-2 px-4 rounded hover:bg-blue-700 transition w-full"
-          >
-            Ver producto
-          </a>
+    <div class="container mx-auto max-w-7xl">
+      <h1 class="text-4xl font-bold mb-6">Catálogo de Productos</h1>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="md:col-span-1">
+          <PriceFilter client:load minPrice={minPrice} maxPrice={maxPrice} />
+          <NameSearchFilter client:load />
+          <CategoryFilter client:load categories={categories} />
         </div>
-      ))}
+        <div class="md:col-span-3">
+          <ProductList client:load initialProducts={products} />
+        </div>
+      </div>
     </div>
   </body>
 </html>
