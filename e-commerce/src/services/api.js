@@ -29,6 +29,5 @@ api.interceptors.response.use(
 );
 
 // La respuesta es un array de productos, no un objeto
-console.log("hola")
 const query = api.get('/products');
 query.then(response => console.log(response.data));

@@ -4,9 +4,13 @@ import ProductList from "../components/ProductList";
 import PriceFilter from "../components/PriceFilter";
 import NameSearchFilter from "../components/NameSearchFilter.vue";
 import CategoryFilter from "../components/CategoryFilter.svelte";
+import productos from '../content/productos.json'; 
+// import api from '../services/api'
 
-const res = await fetch('https://fakestoreapi.com/products');
-const products = await res.json();
+// const res = await api.get('url...');
+// const productos = res.data.data
+
+const products = productos;
 
 const minPrice = Math.floor(Math.min(...products.map((p: any) => p.price)));
 const maxPrice = Math.ceil(Math.max(...products.map((p: any) => p.price)));
